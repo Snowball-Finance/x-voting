@@ -39,6 +39,10 @@ module.exports = {
               "*": ["storageLayout"],
             },
           },
+          optimizer: {
+            enabled: true,
+            runs: 200
+          },
         },
       }
     ],
