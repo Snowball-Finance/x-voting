@@ -249,7 +249,7 @@ describe("Governance", function() {
       expect((await governance.proposals(1)).againstVotes).to.equal(0);
       expect(await governance.state(1)).to.equal(1); // Defeated
 
-      await expect(governance.execute(1)).to.be.revertedWith('Governance::execute: Cannot be executed');
+      await expect(governance.execute(1)).to.be.revertedWith('Governance::execute: cannot be executed');
 
       expect((await governance.proposals(1)).executor).to.equal(ethers.constants.AddressZero);
     });
@@ -267,7 +267,7 @@ describe("Governance", function() {
 
       expect(await governance.state(1)).to.equal(1); // Defeated
 
-      await expect(governance.execute(1)).to.be.revertedWith('Governance::execute: Cannot be executed');
+      await expect(governance.execute(1)).to.be.revertedWith('Governance::execute: cannot be executed');
 
       expect((await governance.proposals(1)).executor).to.equal(ethers.constants.AddressZero);
     });
@@ -284,7 +284,7 @@ describe("Governance", function() {
 
       expect(await governance.state(1)).to.equal(2); // Pending Execution
 
-      await expect(governance.execute(1)).to.be.revertedWith('Governance::execute: Cannot be executed');
+      await expect(governance.execute(1)).to.be.revertedWith('Governance::execute: cannot be executed');
 
       expect((await governance.proposals(1)).executor).to.equal(ethers.constants.AddressZero);
     });
@@ -303,7 +303,7 @@ describe("Governance", function() {
 
       expect(await governance.state(1)).to.equal(5); // Pending Execution
 
-      await expect(governance.execute(1)).to.be.revertedWith('Governance::execute: Cannot be executed');
+      await expect(governance.execute(1)).to.be.revertedWith('Governance::execute: cannot be executed');
 
       expect((await governance.proposals(1)).executor).to.equal(ethers.constants.AddressZero);
     });
@@ -344,7 +344,7 @@ describe("Governance", function() {
 
       expect(await governance.state(1)).to.equal(4); // Executed
 
-      await expect(governance.execute(1)).to.be.revertedWith('Governance::execute: Cannot be executed');
+      await expect(governance.execute(1)).to.be.revertedWith('Governance::execute: cannot be executed');
     });
   });
 
@@ -363,7 +363,7 @@ describe("Governance", function() {
     it("Cannot set minimum voting period as an end user", async function() {
       const validValue = (await governance.minimumVotingPeriod()).add(1);
       await expect(governance.setMinimumVotingPeriod(validValue))
-        .to.be.revertedWith('Governance: Insufficient privileges');
+        .to.be.revertedWith('Governance: insufficient privileges');
     });
 
     it("Cannot set minimum voting period too low", async function() {
@@ -421,7 +421,7 @@ describe("Governance", function() {
     it("Cannot set execution delay as an end user", async function() {
       const validValue = (await governance.EXECUTION_DELAY_MINIMUM()).add(1);
       await expect(governance.setExecutionDelay(validValue))
-        .to.be.revertedWith('Governance: Insufficient privileges');
+        .to.be.revertedWith('Governance: insufficient privileges');
     });
 
     it("Cannot set execution delay too low", async function() {
@@ -479,7 +479,7 @@ describe("Governance", function() {
     it("Cannot set quorum votes as an end user", async function() {
       const validValue = (await governance.QUORUM_VOTES_MINIMUM()).add(1);
       await expect(governance.setQuorumVotes(validValue))
-        .to.be.revertedWith('Governance: Insufficient privileges');
+        .to.be.revertedWith('Governance: insufficient privileges');
     });
 
     it("Cannot set quorum votes too low", async function() {
@@ -537,7 +537,7 @@ describe("Governance", function() {
     it("Cannot set proposal threshold as an end user", async function() {
       const validValue = (await governance.PROPOSAL_THRESHOLD_MINIMUM()).add(1);
       await expect(governance.setProposalThreshold(validValue))
-        .to.be.revertedWith('Governance: Insufficient privileges');
+        .to.be.revertedWith('Governance: insufficient privileges');
     });
 
     it("Cannot set proposal threshold too low", async function() {

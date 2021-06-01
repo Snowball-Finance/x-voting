@@ -86,6 +86,7 @@ contract Governance {
     event QuorumVotesChanges(uint256 newQuorumVotes);
     event ProposalThresholdChanged(uint256 newProposalThreshold);
 
+    /// @dev This token must not be tradeable
     constructor(address _xSNOB) {
         xSNOB = IxSNOB(_xSNOB);
     }
@@ -93,7 +94,7 @@ contract Governance {
     modifier onlyGovernor() {
         require(
             msg.sender == address(this),
-            "Governance: Insufficient privileges"
+            "Governance: insufficient privileges"
         );
         _;
     }
@@ -221,13 +222,13 @@ contract Governance {
 
         require(
             state(_proposalId) == ProposalState.ReadyForExecution,
-            "Governance::execute: Cannot be executed"
+            "Governance::execute: cannot be executed"
         );
 
         (bool success, bytes memory returnData) = proposal.target.call{value: proposal.value}(proposal.data);
         require(
             success,
-            "Governance::execute: Transaction execution reverted."
+            "Governance::execute: transaction execution reverted."
         );
         proposal.executor = msg.sender;
 
