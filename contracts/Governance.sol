@@ -3,8 +3,8 @@ pragma solidity 0.8.4;
 /// SPDX-License-Identifier: MIT
 
 import "./interface/IxSNOB.sol";
-import "./library/Address.sol";
-import "./library/SafeMath.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract Governance {
     using SafeMath for uint256;
