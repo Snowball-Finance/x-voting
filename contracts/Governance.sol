@@ -5,8 +5,9 @@ pragma solidity 0.8.4;
 import "./interface/IxSNOB.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract Governance {
+contract Governance is ReentrancyGuard {
     using SafeMath for uint256;
 
     /// @notice Lower bound for the voting period
@@ -217,7 +218,7 @@ contract Governance {
         emit NewVote(_proposalId, msg.sender, _support, votes);
     }
 
-    function execute(uint256 _proposalId) public payable returns (bytes memory) {
+    function execute(uint256 _proposalId) public payable nonReentrant returns (bytes memory) {
         Proposal storage proposal = proposals[_proposalId];
 
         require(
