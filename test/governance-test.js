@@ -83,7 +83,6 @@ describe("Governance", function() {
       await governance.propose(...validProposal);
 
       const proposal1 = await governance.proposals(1);
-      expect(proposal1.id).to.equal(1);
       expect(proposal1.proposer).to.equal(owner.address);
       expect(proposal1.forVotes).to.equal(0);
       expect(proposal1.againstVotes).to.equal(0);
@@ -91,9 +90,12 @@ describe("Governance", function() {
       expect(proposal1.title).to.equal(validProposal[0]);
       expect(proposal1.metadata).to.equal(validProposal[1]);
       expect(proposal1.votingPeriod).to.equal(validProposal[2]);
-      expect(proposal1.target).to.equal(validProposal[3]);
-      expect(proposal1.value).to.equal(validProposal[4]);
-      expect(proposal1.data).to.equal(validProposal[5]);
+
+      const proposalExecutionContext1 = await governance.proposalExecutionContexts(1);
+
+      expect(proposalExecutionContext1.target).to.equal(validProposal[3]);
+      expect(proposalExecutionContext1.value).to.equal(validProposal[4]);
+      expect(proposalExecutionContext1.data).to.equal(validProposal[5]);
 
       expect(await governance.proposalCount()).to.equal(1);
       expect(await governance.state(1)).to.equal(0); // Active
