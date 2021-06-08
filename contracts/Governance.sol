@@ -38,6 +38,7 @@ contract Governance is ReentrancyGuard {
 
     /// @notice The record of all proposals ever proposed
     mapping(uint256 => Proposal) public proposals;
+    mapping(uint256 => ProposalExecutionContext) public proposalExecutionContexts;
     mapping(uint256 => mapping(address => Receipt)) public receipts;
     mapping(address => uint256) public lastProposalByAddress;
 
@@ -45,15 +46,19 @@ contract Governance is ReentrancyGuard {
     IxSNOB public xSNOB;
 
     struct Proposal {
-        uint256 id;
         string title;
         string metadata;
         address proposer;
         address executor;
         uint256 startTime;
         uint256 votingPeriod;
+        uint256 quorumVotes;
+        uint256 executionDelay;
         uint256 forVotes;
         uint256 againstVotes;
+    }
+
+    struct ProposalExecutionContext {
         address target;
         uint256 value;
         bytes data;
@@ -100,23 +105,23 @@ contract Governance is ReentrancyGuard {
         _;
     }
 
-    function state(uint256 proposalId) public view returns (ProposalState) {
+    function state(uint256 _proposalId) public view returns (ProposalState) {
         require(
-            proposalId <= proposalCount && proposalId != 0,
+            _proposalId <= proposalCount && _proposalId != 0,
             "Governance::state: invalid proposal id"
         );
 
-        Proposal storage proposal = proposals[proposalId];
+        Proposal storage proposal = proposals[_proposalId];
 
         if (block.timestamp <= proposal.startTime.add(proposal.votingPeriod)) {
             return ProposalState.Active;
         } else if (proposal.executor != address(0)) {
             return ProposalState.Executed;
-        } else if (proposal.forVotes <= proposal.againstVotes || proposal.forVotes < quorumVotes) {
+        } else if (proposal.forVotes <= proposal.againstVotes || proposal.forVotes < proposal.quorumVotes) {
             return ProposalState.Defeated;
-        } else if (block.timestamp < proposal.startTime.add(proposal.votingPeriod).add(executionDelay)) {
+        } else if (block.timestamp < proposal.startTime.add(proposal.votingPeriod).add(proposal.executionDelay)) {
             return ProposalState.PendingExecution;
-        } else if (block.timestamp < proposal.startTime.add(proposal.votingPeriod).add(executionDelay).add(EXPIRATION_PERIOD)) {
+        } else if (block.timestamp < proposal.startTime.add(proposal.votingPeriod).add(proposal.executionDelay).add(EXPIRATION_PERIOD)) {
             return ProposalState.ReadyForExecution;
         } else {
             return ProposalState.Expired;
@@ -165,25 +170,32 @@ contract Governance is ReentrancyGuard {
         );
 
         proposalCount++;
+
         Proposal memory newProposal = Proposal({
-            id: proposalCount,
             title: _title,
             metadata: _metadata,
             proposer: msg.sender,
             executor: address(0),
             startTime: block.timestamp,
             votingPeriod: _votingPeriod,
+            quorumVotes: quorumVotes,
+            executionDelay: executionDelay,
             forVotes: 0,
-            againstVotes: 0,
+            againstVotes: 0
+        });
+
+        proposals[proposalCount] = newProposal;
+        lastProposalByAddress[msg.sender] = proposalCount;
+
+        ProposalExecutionContext memory newProposalExecutionContext = ProposalExecutionContext({
             target: _target,
             value: _value,
             data: _data
         });
 
-        proposals[newProposal.id] = newProposal;
-        lastProposalByAddress[msg.sender] = newProposal.id;
+        proposalExecutionContexts[proposalCount] = newProposalExecutionContext;
 
-        emit ProposalCreated(newProposal.id, newProposal.proposer, newProposal.title);
+        emit ProposalCreated(proposalCount, newProposal.proposer, newProposal.title);
     }
 
     function vote(uint256 _proposalId, bool _support) public {
@@ -193,7 +205,7 @@ contract Governance is ReentrancyGuard {
         );
 
         Proposal storage proposal = proposals[_proposalId];
-        Receipt storage receipt = receipts[proposal.id][msg.sender];
+        Receipt storage receipt = receipts[_proposalId][msg.sender];
 
         uint256 votes = xSNOB.balanceOf(msg.sender, proposal.startTime);
 
@@ -219,21 +231,23 @@ contract Governance is ReentrancyGuard {
     }
 
     function execute(uint256 _proposalId) public payable nonReentrant returns (bytes memory) {
-        Proposal storage proposal = proposals[_proposalId];
-
         require(
             state(_proposalId) == ProposalState.ReadyForExecution,
             "Governance::execute: cannot be executed"
         );
 
-        (bool success, bytes memory returnData) = proposal.target.call{value: proposal.value}(proposal.data);
+        Proposal storage proposal = proposals[_proposalId];
+
+        ProposalExecutionContext storage proposalExecutionContext = proposalExecutionContexts[_proposalId];
+
+        (bool success, bytes memory returnData) = proposalExecutionContext.target.call{value: proposalExecutionContext.value}(proposalExecutionContext.data);
         require(
             success,
             "Governance::execute: transaction execution reverted."
         );
         proposal.executor = msg.sender;
 
-        emit ProposalExecuted(proposal.id, proposal.executor);
+        emit ProposalExecuted(_proposalId, proposal.executor);
 
         return returnData;
     }
