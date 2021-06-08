@@ -102,7 +102,7 @@ contract Governance is ReentrancyGuard {
 
     function state(uint256 proposalId) public view returns (ProposalState) {
         require(
-            proposalCount >= proposalId,
+            proposalId <= proposalCount && proposalId != 0,
             "Governance::state: invalid proposal id"
         );
 

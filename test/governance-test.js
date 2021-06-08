@@ -254,6 +254,10 @@ describe("Governance", function() {
       expect((await governance.proposals(1)).executor).to.equal(ethers.constants.AddressZero);
     });
 
+    it('Cannot execute a proposal proposal id of 0', async function() {
+      await expect(governance.execute(0)).to.be.revertedWith('Governance::state: invalid proposal id');
+    });
+
     it('Cannot execute a defeated proposal', async function() {
       const proposal1 = await governance.proposals(1);
       const executionDelay = await governance.executionDelay();
