@@ -65,14 +65,7 @@ contract DummyXSNOB is IxSNOB {
     /**
      * @dev For ease of testing xSNOB.
      */
-    function balanceOf(address account, uint256 timestamp) public view virtual override returns (uint256) {
-        return _balances[account];
-    }
-
-    /**
-     * @dev For ease of testing xSNOB.
-     */
-    function balanceOfAt(address account, uint256 block) public view virtual override returns (uint256) {
+    function balanceOf(address account) public view virtual override returns (uint256) {
         return _balances[account];
     }
 }

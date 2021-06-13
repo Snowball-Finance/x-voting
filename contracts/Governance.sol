@@ -162,7 +162,7 @@ contract Governance is ReentrancyGuard {
             );
         }
 
-        uint256 votes = xSNOB.balanceOf(msg.sender, block.timestamp);
+        uint256 votes = xSNOB.balanceOf(msg.sender);
 
         require(
             votes > proposalThreshold,
@@ -207,7 +207,7 @@ contract Governance is ReentrancyGuard {
         Proposal storage proposal = proposals[_proposalId];
         Receipt storage receipt = receipts[_proposalId][msg.sender];
 
-        uint256 votes = xSNOB.balanceOf(msg.sender, proposal.startTime);
+        uint256 votes = xSNOB.balanceOf(msg.sender);
 
         if (receipt.hasVoted) {
             if (receipt.support) {
