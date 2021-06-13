@@ -29,7 +29,7 @@ describe("Governance", function() {
         [owner.address]: amount_xSNOB
       }
     });
-    expect(await xSNOB.balanceOf(owner.address, 0)).to.equal(amount_xSNOB);
+    expect(await xSNOB.balanceOf(owner.address)).to.equal(amount_xSNOB);
 
     validProposal = [
       "Sample Title",
@@ -52,7 +52,7 @@ describe("Governance", function() {
   describe('Proposing', async function() {
     it("Cannot submit proposal with 0 xSNOB", async function() {
       const [owner, wallet1] = await ethers.getSigners();
-      expect(await xSNOB.balanceOf(wallet1.address, 0)).to.equal(0);
+      expect(await xSNOB.balanceOf(wallet1.address)).to.equal(0);
 
       await expect(governance.connect(wallet1).propose(
         ...validProposal
@@ -156,7 +156,7 @@ describe("Governance", function() {
 
     beforeEach(async function() {
       const owner = await ethers.getSigner();
-      xSNOB_balance = await xSNOB.balanceOf(owner.address, 0);
+      xSNOB_balance = await xSNOB.balanceOf(owner.address);
 
       await governance.propose(...validProposal);
     });
@@ -233,7 +233,7 @@ describe("Governance", function() {
 
     beforeEach(async function () {
       const owner = await ethers.getSigner();
-      xSNOB_balance = await xSNOB.balanceOf(owner.address, 0);
+      xSNOB_balance = await xSNOB.balanceOf(owner.address);
 
       await governance.propose(...validProposal);
     });
