@@ -19,7 +19,12 @@ task("accounts", "Prints the list of accounts", async () => {
  */
 module.exports = {
   networks: {
-    hardhat: {},
+    hardhat: {
+      forking: {
+        url: "https://api.avax.network/ext/bc/C/rpc",
+        blockNumber: 2405677
+      }
+    },
     fuji: {
       url: "https://api.avax-test.network/ext/bc/C/rpc",
       accounts: [process.env.PRIVATE_KEY]
