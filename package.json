@@ -12,12 +12,15 @@
     "node": "14.16.1",
     "npm": "7.15.0"
   },
+  "scripts": {
+    "deployMainnet": "npx hardhat run scripts/governance-deploy.js --network mainnet"
+  },
   "devDependencies": {
     "@eth-optimism/smock": "^1.1.4",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
     "@openzeppelin/contracts": "^4.1.0",
     "chai": "^4.3.4",
     "dotenv": "^10.0.0",
-    "hardhat": "^2.3.0"
+    "hardhat": "^2.4.0"
   }
 }
